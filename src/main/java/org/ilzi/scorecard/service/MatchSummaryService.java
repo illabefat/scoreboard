@@ -3,6 +3,10 @@ package org.ilzi.scorecard.service;
 import org.ilzi.scorecard.model.MatchSummary;
 import org.ilzi.scorecard.repository.MatchSummaryRepository;
 
+import java.util.List;
+
+import static java.util.Comparator.comparing;
+
 public class MatchSummaryService {
 
     private final MatchSummaryRepository matchSummaryRepository;
@@ -25,5 +29,13 @@ public class MatchSummaryService {
 
     public void endMatch(String matchId) {
         matchSummaryRepository.remove(matchId);
+    }
+
+    public List<MatchSummary> getAllMatchSummaries() {
+        return matchSummaryRepository.getAll().stream()
+            .sorted(comparing((MatchSummary m) -> m.homeTeamScore + m.awayTeamScore)
+                .thenComparing(m -> m.createdTimestamp)
+                .reversed())
+            .toList();
     }
 }

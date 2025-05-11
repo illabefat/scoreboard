@@ -60,6 +60,34 @@ class MatchSummaryServiceTest implements MatchSummaryTestData {
         assertThat(repository.find(existingSummary.id)).isEmpty();
     }
 
+    @Test
+    void getAll_returns_all_matches_sorted_by_score_and_created_date() {
+        // given
+        final var createdDate = System.currentTimeMillis();
+        final var firstMatch = givenExists(aMatchSummary()
+            .homeTeamScore(10)
+            .awayTeamScore(10)
+            .createdDate(createdDate));
+        final var secondMatch = givenExists(aMatchSummary()
+            .homeTeamScore(0)
+            .awayTeamScore(5)
+            .createdDate(createdDate + 1L));
+        final var thirdMatch = givenExists(aMatchSummary()
+            .homeTeamScore(10)
+            .awayTeamScore(2)
+            .createdDate(createdDate + 2L));
+        final var fourthMatch = givenExists(aMatchSummary()
+            .homeTeamScore(6)
+            .awayTeamScore(6)
+            .createdDate(createdDate + 3L));
+
+        // when
+        final var result = service.getAllMatchSummaries();
+
+        // then
+        assertThat(result).containsExactly(firstMatch, fourthMatch, thirdMatch, secondMatch);
+    }
+
     private MatchSummary givenExists(MatchSummary.Builder builder) {
         final var matchSummary = builder.build();
         repository.add(matchSummary);

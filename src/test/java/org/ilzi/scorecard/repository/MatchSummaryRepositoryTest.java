@@ -54,6 +54,43 @@ class MatchSummaryRepositoryTest implements MatchSummaryTestData {
     }
 
     @Test
+    void getAll__returns_match_summaries_sorted_by_total_score_and_created_date() {
+        // given
+        final var createdDate = System.currentTimeMillis();
+        final var firstMatch = givenExists(aMatchSummary()
+            .homeTeamScore(10)
+            .awayTeamScore(10)
+            .createdDate(createdDate));
+        final var secondMatch = givenExists(aMatchSummary()
+            .homeTeamScore(0)
+            .awayTeamScore(5)
+            .createdDate(createdDate + 1L));
+        final var thirdMatch = givenExists(aMatchSummary()
+            .homeTeamScore(10)
+            .awayTeamScore(2)
+            .createdDate(createdDate + 2L));
+        final var fourthMatch = givenExists(aMatchSummary()
+            .homeTeamScore(6)
+            .awayTeamScore(6)
+            .createdDate(createdDate + 3L));
+
+        // when
+        final var result = repository.getAll();
+
+        // then
+        assertThat(result).containsExactlyInAnyOrder(firstMatch, fourthMatch, thirdMatch, secondMatch);
+    }
+
+    @Test
+    void getAll__returns_empty_list_when_no_match_summaries_found() {
+        // when
+        final var result = repository.getAll();
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @Test
     void create__creates_match_with_default_score_of() {
         // when
         final var id = repository.create("home", "away");

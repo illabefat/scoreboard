@@ -2,6 +2,7 @@ package org.ilzi.scorecard.repository;
 
 import org.ilzi.scorecard.model.MatchSummary;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,6 +23,10 @@ public class MatchSummaryRepository {
     public MatchSummary get(String matchId) {
         return find(matchId)
             .orElseThrow(() -> new IllegalArgumentException("Match with id %s not found".formatted(matchId)));
+    }
+    
+    public Collection<MatchSummary> getAll() {
+        return matchSummaries.values();
     }
 
     public String create(String homeTeam, String awayTeam) {
